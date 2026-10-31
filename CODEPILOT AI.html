@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CODEPILOT AI</title>
+<style>
+:root{--bg:#0b1020;--card:#121a30;--bd:#243052;--tx:#e6ebff;--mu:#8e9bc4;--ac:#3b82f6;--pu:#8b5cf6;--ok:#22c55e;--wa:#f59e0b;--er:#ef4444;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f4f6fc;--card:#fff;--bd:#d9dff0;--tx:#141b34;--mu:#59658a}}
+*{box-sizing:border-box}html,body{margin:0}body{background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:inherit;text-decoration:none}
+.g{background:linear-gradient(90deg,var(--ac),var(--pu));-webkit-background-clip:text;background-clip:text;color:transparent}
+.btn{border:1px solid var(--bd);background:var(--card);color:var(--tx);padding:9px 16px;border-radius:10px;cursor:pointer;font:inherit;transition:.2s}
+.btn:hover{border-color:var(--ac);transform:translateY(-1px)}
+.btn.p{background:linear-gradient(90deg,var(--ac),var(--pu));border:0;color:#fff}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:18px;transition:.2s}
+.card:hover{border-color:var(--ac)}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+.tag{font-size:11px;padding:2px 8px;border-radius:99px;border:1px solid var(--bd);color:var(--mu)}
+.demo{background:rgba(139,92,246,.15);color:#b79bff;border:1px solid var(--pu);padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:14px 22px;border-bottom:1px solid var(--bd)}
+.logo{font-weight:800;letter-spacing:.5px}
+#app{display:flex;min-height:100vh}
+#side{width:220px;padding:16px;border-right:1px solid var(--bd);flex-shrink:0}
+#side a{display:block;padding:9px 12px;border-radius:9px;color:var(--mu);margin:2px 0}
+#side a.on,#side a:hover{background:var(--card);color:var(--tx)}
+#main{flex:1;padding:22px;min-width:0}
+#menu{display:none}
+@media(max-width:760px){#side{position:fixed;left:-240px;top:0;bottom:0;background:var(--bg);z-index:20;transition:.25s;padding-top:calc(16px + env(safe-area-inset-top,0px))}#side.open{left:0}#menu{display:inline-block}#main{padding:16px}}
+h1,h2,h3{margin:0 0 10px}.hero{text-align:center;padding:60px 18px}.hero h1{font-size:clamp(34px,7vw,64px);line-height:1.05}
+input,select,textarea{background:var(--bg);color:var(--tx);border:1px solid var(--bd);border-radius:10px;padding:9px 12px;font:inherit;max-width:100%}
+pre{background:#080c1a;color:#d7e0ff;padding:14px;border-radius:10px;overflow-x:auto;font-size:13px;margin:8px 0}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.mu{color:var(--mu)}
+.sev{font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px}
+.High{background:rgba(239,68,68,.18);color:var(--er)}.Medium{background:rgba(245,158,11,.18);color:var(--wa)}.Low{background:rgba(34,197,94,.18);color:var(--ok)}
+.msg{padding:10px 14px;border-radius:12px;margin:8px 0;max-width:85%}.u{background:var(--ac);color:#fff;margin-left:auto}.b{background:var(--card);border:1px solid var(--bd)}
+#toast{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--card);border:1px solid var(--ac);padding:10px 16px;border-radius:10px;opacity:0;transform:translateY(10px);transition:.3s;z-index:50}#toast.s{opacity:1;transform:none}
+.bar{height:8px;border-radius:9px;background:var(--bd);overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--ac),var(--pu))}
+.sc{overflow-x:auto}table{width:100%;border-collapse:collapse}td,th{padding:8px;border-bottom:1px solid var(--bd);text-align:left}
+details{border:1px solid var(--bd);border-radius:10px;padding:8px 12px;margin:6px 0}summary{cursor:pointer}
+svg text{fill:var(--tx);font-size:11px;pointer-events:none}.nd{cursor:pointer}
+</style></head><body>
+<div id="root"></div><div id="toast"></div>
+<script>
+const $=s=>document.querySelector(s);
+const toast=m=>{const t=$('#toast');t.textContent=m;t.className='s';clearTimeout(toast.h);toast.h=setTimeout(()=>t.className='',2200)};
+const copy=t=>{try{navigator.clipboard.writeText(t).then(()=>toast('Copied to clipboard'),()=>toast('Copy blocked by browser'))}catch(e){toast('Copy blocked by browser')}};
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const DEMO='<span class="demo">DEMO DATA</span>';
+let store={};try{store=JSON.parse(localStorage.getItem('cp')||'{}')}catch(e){}
+const save=()=>{try{localStorage.setItem('cp',JSON.stringify(store))}catch(e){}};
+const REPOS={'CODEPILOT-SAMPLE-APP':{files:48,lang:[['Python',46],['TypeScript',34],['JavaScript',12],['CSS',8]],deps:['fastapi','sqlalchemy','pyjwt','react','vite','axios'],entry:['backend/main.py','frontend/src/main.tsx'],tree:['backend/','  main.py','  auth/jwt_handler.py','  db/connection.py','  routes/users.py','  utils/helpers.py','frontend/','  src/main.tsx','  src/App.tsx','  src/api/client.ts','tests/test_auth.py']},
+'sample-flask-shop':{files:31,lang:[['Python',72],['HTML',20],['CSS',8]],deps:['flask','jinja2','stripe-sdk'],entry:['app.py'],tree:['app.py','models.py','templates/','static/']},
+'sample-node-api':{files:27,lang:[['JavaScript',88],['JSON',12]],deps:['express','mongoose','cors'],entry:['server.js'],tree:['server.js','routes/','models/','middleware/']}};
+const GN=[['main.py','file',60,160,'FastAPI entry point; mounts all routers.'],['routes/users.py','file',220,60,'API routes for user CRUD.'],['auth/jwt_handler.py','module',220,160,'Issues and verifies JWT tokens.'],['db/connection.py','module',220,270,'Opens the SQLAlchemy engine and sessions.'],['login()','function',400,100,'Validates credentials, returns a token.'],['verify_token()','function',400,190,'Decodes and validates a JWT.'],['get_user()','function',400,290,'Fetches a user row by id.'],['pyjwt','dependency',580,150,'Third-party JWT library.'],['sqlalchemy','dependency',580,280,'ORM and DB toolkit.'],['App.tsx','file',580,50,'React root; calls API client.']];
+const GE=[[0,1],[0,2],[0,3],[1,4],[2,4],[2,5],[3,6],[5,7],[3,8],[1,6],[9,1]];
+const BUGS=[['Potential SQL injection','High','db/connection.py',42,'Query built by string concatenation with user input.','Use parameterized queries.','cur.execute("SELECT * FROM users WHERE id = %s", (uid,))'],['Missing error handling','Medium','routes/users.py',27,'DB call has no try/except; failures return a 500.','Wrap in try/except and return a clean 4xx/5xx.','try:\n    user = get_user(uid)\nexcept DBError:\n    raise HTTPException(503)'],['Unused variable','Low','utils/helpers.py',12,'Variable `tmp` is assigned but never read.','Remove the assignment.','# delete: tmp = parse(data)'],['Possible null reference','Medium','auth/jwt_handler.py',58,'payload.get("sub") may be None before use.','Check for None before use.','sub = payload.get("sub")\nif sub is None:\n    raise AuthError()'],['Inefficient loop','Low','utils/helpers.py',73,'Nested loop makes membership checks O(n²).','Use a set for lookups.','seen = set(items)\nout = [x for x in data if x in seen]']];
+const FUNCS={'verify_token(token)':[['valid JWT','user_id','Valid'],['expired JWT','AuthError','Expired'],['empty string','AuthError','Empty'],['tampered signature','AuthError','Tampered']],'get_user(id)':[['1','User(id=1)','Found'],['9999','None','Missing'],['-1','ValueError','Invalid'],['None','ValueError','Null']],'slugify(text)':[['"Hello World"','"hello-world"','Basic'],['"  A  B "','"a-b"','Spaces'],['""','""','Empty'],['"Ünï"','"uni"','Unicode']]};
+const OPT=[{t:'Duplicate lookup',o:'def common(a, b):\n    r = []\n    for x in a:\n        if x in b:\n            r.append(x)\n    return r',n:'def common(a, b):\n    sb = set(b)\n    return [x for x in a if x in sb]',w:['A set gives O(1) membership checks.','A comprehension is shorter and faster.'],c:['O(n·m)','O(n+m)']},{t:'String building',o:'s = ""\nfor w in words:\n    s += w + ","',n:'s = ",".join(words)',w:['join allocates once instead of per iteration.'],c:['O(n²) worst case','O(n)']}];
+const REPLY=[[/architect|overview|structure/,'The app has a Python FastAPI backend (routes, auth, db) and a React frontend that calls it through src/api/client.ts. main.py mounts the routers.'],[/auth|login|token|jwt/,'Authentication lives in backend/auth/jwt_handler.py. login() issues a JWT and verify_token() validates it on protected routes.'],[/database|db|sql/,'The database connection is in backend/db/connection.py, which creates a SQLAlchemy engine and session factory.'],[/secur|vuln|inject/,'Bug Detective lists 5 sample findings. The most serious is a possible SQL injection at db/connection.py:42, caused by string-built queries.'],[/optim|slow|perf|function/,'Try the Code Optimizer tab: replacing list membership checks with a set drops O(n·m) to O(n+m).']];
+const NAV=[['home','Landing'],['dashboard','Dashboard'],['analyzer','Repository Analyzer'],['graph','Knowledge Graph'],['assistant','AI Assistant'],['bugs','Bug Detective'],['tests','Test Generator'],['optimizer','Code Optimizer']];
+let repo=store.repo||'CODEPILOT-SAMPLE-APP',chat=[],gf='all',gq='',gsel=null,zoom=1,bsev='all',fn=Object.keys(FUNCS)[0],oi=0,tab='tree';
+const logo='<a href="#home" class="logo"><span class="g">◆ CODEPILOT</span> AI</a>';
+const code=(c)=>`<pre>${esc(c)}</pre>`;
+const V={
+home:()=>`<div class="nav">${logo}<div class="row"><a class="btn" href="#analyzer">Explore Demo</a><a class="btn p" href="#dashboard">Get Started</a></div></div>
+<div class="hero"><span class="demo">FRONTEND PROTOTYPE · NO API KEYS</span><h1 style="margin-top:16px">Your Codebase.<br><span class="g">Understood.</span></h1><p class="mu" style="max-width:560px;margin:14px auto 24px">An intelligent software engineering assistant concept: map repositories, find bugs, generate tests and optimize code. This build runs on local sample data.</p><div class="row" style="justify-content:center"><a class="btn p" href="#dashboard">Get Started</a><a class="btn" href="#graph">Explore Demo</a></div></div>
+<div style="padding:0 22px 40px;max-width:1000px;margin:auto"><div class="card"><div class="row" style="justify-content:space-between"><b>CODEPILOT-SAMPLE-APP</b>${DEMO}</div><div class="grid" style="margin-top:12px">${[['48','Files'],['4','Languages'],['6','Dependencies'],['5','Issues']].map(a=>`<div><div style="font-size:28px;font-weight:700" class="g">${a[0]}</div><span class="mu">${a[1]}</span></div>`).join('')}</div></div>
+<h2 style="margin-top:34px">Features</h2><div class="grid">${NAV.slice(2).map(n=>`<a href="#${n[0]}" class="card"><b>${n[1]}</b><p class="mu" style="margin:6px 0 0">Open the interactive demo →</p></a>`).join('')}</div>
+<h2 style="margin-top:34px">How it works</h2><div class="grid">${['1 · Pick a repo','2 · Analyze structure','3 · Ask, fix, test'].map(s=>`<div class="card">${s}</div>`).join('')}</div>
+<h2 style="margin-top:34px">Stack</h2><div class="row">${['React','Vite','TypeScript','Tailwind','Recharts'].map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+<p class="mu" style="margin-top:20px">Not a live Gemma 4 or Graphify integration. Modular design leaves room to add both later.</p></div>
+<div class="nav mu"><span>© 2026 CODEPILOT AI · Hackathon demo</span></div>`,
+dashboard:()=>{const r=REPOS[repo];return`<div class="row" style="justify-content:space-between"><h1>Welcome back, engineer</h1>${DEMO}</div><p class="mu">Overview of <b>${repo}</b></p>
+<div class="grid">${[[r.files,'Files analyzed'],[r.lang.length,'Languages'],[r.deps.length,'Dependencies'],[5,'Potential issues']].map(a=>`<div class="card"><div style="font-size:30px;font-weight:700" class="g">${a[0]}</div><span class="mu">${a[1]}</span></div>`).join('')}</div>
+<div class="grid" style="margin-top:14px"><div class="card"><h3>Languages</h3>${r.lang.map(l=>`<div class="row" style="justify-content:space-between"><span>${l[0]}</span><span class="mu">${l[1]}%</span></div><div class="bar"><i style="width:${l[1]}%"></i></div>`).join('')}</div>
+<div class="card"><h3>Recent activity</h3>${['Pushed fix: JWT expiry check','Opened PR: add users route tests','Merged: refactor db session'].map((a,i)=>`<div style="padding:6px 0;border-bottom:1px solid var(--bd)">${a}<br><span class="mu" style="font-size:12px">${i+1}d ago · sample</span></div>`).join('')}</div></div>`},
+analyzer:()=>{const r=REPOS[repo];return`<div class="row" style="justify-content:space-between"><h1>Repository Analyzer</h1>${DEMO}</div>
+<div class="row"><select id="rsel">${Object.keys(REPOS).map(k=>`<option ${k==repo?'selected':''}>${k}</option>`).join('')}</select><input id="rurl" placeholder="https://github.com/org/repo" style="flex:1;min-width:180px"><button class="btn p" id="rgo">Analyze</button></div>
+<p class="mu">Sample data only: no real repository is downloaded or analyzed.</p>
+<div class="row" style="margin:12px 0">${[['tree','Files'],['lang','Languages'],['deps','Dependencies'],['entry','Entry points']].map(t=>`<button class="btn ${tab==t[0]?'p':''}" data-tab="${t[0]}">${t[1]}</button>`).join('')}</div>
+<div class="card">${tab=='tree'?code(r.tree.join('\n')):tab=='lang'?r.lang.map(l=>`<div class="row" style="justify-content:space-between"><span>${l[0]}</span><span class="mu">${l[1]}%</span></div><div class="bar"><i style="width:${l[1]}%"></i></div>`).join(''):tab=='deps'?r.deps.map(d=>`<span class="tag" style="margin-right:6px">${d}</span>`).join(''):r.entry.map(e=>`<div><code>${e}</code></div>`).join('')}</div>`},
+graph:()=>{const q=gq.toLowerCase();const vis=GN.map((n,i)=>(gf=='all'||n[1]==gf)&&n[0].toLowerCase().includes(q));const col={file:'#3b82f6',module:'#8b5cf6',function:'#22c55e',dependency:'#f59e0b'};
+return`<div class="row" style="justify-content:space-between"><h1>Knowledge Graph</h1><span class="demo">DEMO GRAPH · NOT GRAPHIFY OUTPUT</span></div>
+<div class="row"><input id="gq" placeholder="Search nodes" value="${gq}"><select id="gf">${['all','file','module','function','dependency'].map(x=>`<option ${x==gf?'selected':''}>${x}</option>`).join('')}</select><button class="btn" id="zi">＋</button><button class="btn" id="zo">－</button><button class="btn" id="zr">Reset</button></div>
+<div class="card sc" style="margin-top:12px;padding:6px"><svg viewBox="0 0 ${700/zoom} ${380/zoom}" style="width:100%;min-width:560px;height:auto">${GE.map(e=>{const a=GN[e[0]],b=GN[e[1]];return`<line x1="${a[2]}" y1="${a[3]}" x2="${b[2]}" y2="${b[3]}" stroke="var(--bd)" stroke-width="1.5" opacity="${vis[e[0]]&&vis[e[1]]?1:.15}"/>`}).join('')}
+${GN.map((n,i)=>`<g class="nd" data-n="${i}" opacity="${vis[i]?1:.2}"><circle cx="${n[2]}" cy="${n[3]}" r="${gsel===i?17:12}" fill="${col[n[1]]}" stroke="${gsel===i?'#fff':'none'}" stroke-width="2"/><text x="${n[2]}" y="${n[3]+28}" text-anchor="middle">${esc(n[0])}</text></g>`).join('')}</svg></div>
+<div class="card" style="margin-top:12px">${gsel===null?'<span class="mu">Click a node to see details.</span>':`<b>${esc(GN[gsel][0])}</b> <span class="tag">${GN[gsel][1]}</span><p>${GN[gsel][4]}</p><span class="mu">Connected to: ${GE.filter(e=>e.includes(gsel)).map(e=>GN[e[0]==gsel?e[1]:e[0]][0]).join(', ')}</span>`}</div>`},
+assistant:()=>`<div class="row" style="justify-content:space-between"><h1>AI Code Assistant</h1><span class="demo">DEMO MODE · KEYWORD REPLIES</span></div>
+<p class="mu">Canned answers matched by keyword. No AI model is connected.</p>
+<div class="row">${['Explain the repository architecture','Where is authentication handled?','Explain the database connection','Identify possible security issues','How can I optimize this function?'].map(q=>`<button class="btn" data-q="${q}">${q}</button>`).join('')}</div>
+<div class="card" style="margin-top:12px;min-height:240px" id="chat">${chat.length?chat.map(m=>`<div class="msg ${m[0]}">${esc(m[1])}</div>`).join(''):'<span class="mu">Ask something to begin.</span>'}</div>
+<div class="row" style="margin-top:10px"><input id="ci" placeholder="Ask about the codebase" style="flex:1"><button class="btn p" id="cs">Send</button></div>`,
+bugs:()=>{const l=BUGS.filter(b=>bsev=='all'||b[1]==bsev);return`<div class="row" style="justify-content:space-between"><h1>Bug Detective</h1>${DEMO}</div>
+<div class="row" style="margin-bottom:12px">${['all','High','Medium','Low'].map(s=>`<button class="btn ${bsev==s?'p':''}" data-sev="${s}">${s}</button>`).join('')}</div>
+${l.map(b=>`<details><summary><span class="sev ${b[1]}">${b[1]}</span> <b>${b[0]}</b> <span class="mu">· ${b[2]}:${b[3]}</span></summary><p>${b[4]}</p><p class="mu">Suggested fix: ${b[5]}</p>${code(b[6])}<button class="btn" data-copy="${esc(b[6]).replace(/"/g,'&quot;')}">Copy fix</button></details>`).join('')}`},
+tests:()=>`<div class="row" style="justify-content:space-between"><h1>Test Case Generator</h1><span class="demo">TEMPLATES · NOT EXECUTED</span></div>
+<select id="fsel">${Object.keys(FUNCS).map(f=>`<option ${f==fn?'selected':''}>${f}</option>`).join('')}</select>
+<div class="card sc" style="margin-top:12px"><table><tr><th>Function</th><th>Input</th><th>Expected</th><th>Case</th><th>Status</th></tr>${FUNCS[fn].map(c=>`<tr><td><code>${fn}</code></td><td><code>${esc(c[0])}</code></td><td><code>${esc(c[1])}</code></td><td>${c[2]}</td><td><span class="tag">Not run</span></td></tr>`).join('')}</table></div>
+<button class="btn" id="tcp" style="margin-top:10px">Copy as pytest</button>`,
+optimizer:()=>{const o=OPT[oi];return`<div class="row" style="justify-content:space-between"><h1>Code Optimizer</h1>${DEMO}</div>
+<div class="row" style="margin-bottom:12px">${OPT.map((x,i)=>`<button class="btn ${i==oi?'p':''}" data-oi="${i}">${x.t}</button>`).join('')}</div>
+<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))"><div><b>Original</b> <span class="tag">${o.c[0]}</span>${code(o.o)}</div><div><b>Optimized</b> <span class="tag">${o.c[1]}</span>${code(o.n)}<button class="btn" data-copy="${esc(o.n).replace(/"/g,'&quot;')}">Copy optimized</button></div></div>
+<div class="card" style="margin-top:12px"><b>Why it's better</b><ul>${o.w.map(w=>`<li>${w}</li>`).join('')}</ul></div>`}
+};
+function ask(q){chat.push(['u',q]);const m=REPLY.find(r=>r[0].test(q.toLowerCase()));chat.push(['b',m?m[1]:'Demo mode only understands a few topics: architecture, authentication, database, security and optimization.']);render()}
+function render(){const p=(location.hash||'#home').slice(1);const pg=V[p]?p:'home';
+if(pg=='home'){$('#root').innerHTML=V.home()}else{$('#root').innerHTML=`<div id="app"><aside id="side">${logo}<div style="height:14px"></div>${NAV.map(n=>`<a href="#${n[0]}" class="${n[0]==pg?'on':''}">${n[1]}</a>`).join('')}</aside><main id="main"><button class="btn" id="menu">☰ Menu</button>${V[pg]()}</main></div>`}
+wire(pg)}
+function wire(pg){const on=(s,e,f)=>{const el=$(s);if(el)el.addEventListener(e,f)},all=(s,f)=>document.querySelectorAll(s).forEach(f);
+on('#menu','click',()=>$('#side').classList.toggle('open'));
+all('#side a',a=>a.addEventListener('click',()=>$('#side').classList.remove('open')));
+on('#rsel','change',e=>{repo=e.target.value;store.repo=repo;save();toast('Loaded '+repo+' (sample)');render()});
+on('#rgo','click',()=>{const u=$('#rurl').value.trim();toast(u?'Sample data shown. Real repos are not analyzed.':'Showing '+repo+' sample');render()});
+all('[data-tab]',b=>b.onclick=()=>{tab=b.dataset.tab;render()});
+on('#gq','input',e=>{gq=e.target.value;const pos=gq.length;render();const i=$('#gq');i.focus();i.setSelectionRange(pos,pos)});
+on('#gf','change',e=>{gf=e.target.value;render()});
+on('#zi','click',()=>{zoom=Math.min(2.5,zoom+.3);render()});on('#zo','click',()=>{zoom=Math.max(.6,zoom-.3);render()});on('#zr','click',()=>{zoom=1;gsel=null;gq='';gf='all';render()});
+all('.nd',n=>n.onclick=()=>{gsel=+n.dataset.n;render()});
+all('[data-q]',b=>b.onclick=()=>ask(b.dataset.q));
+const send=()=>{const i=$('#ci');if(i&&i.value.trim())ask(i.value.trim())};on('#cs','click',send);on('#ci','keydown',e=>{if(e.key=='Enter')send()});
+all('[data-sev]',b=>b.onclick=()=>{bsev=b.dataset.sev;render()});
+all('[data-copy]',b=>b.onclick=()=>copy(b.dataset.copy.replace(/&quot;/g,'"').replace(/&lt;/g,'<').replace(/&amp;/g,'&')));
+on('#fsel','change',e=>{fn=e.target.value;render()});
+on('#tcp','click',()=>copy(FUNCS[fn].map((c,i)=>`def test_${i+1}():\n    # ${c[2]}: input ${c[0]} -> ${c[1]}\n    pass`).join('\n\n')));
+all('[data-oi]',b=>b.onclick=()=>{oi=+b.dataset.oi;render()})}
+addEventListener('hashchange',()=>{render();scrollTo(0,0)});render();
+</script></body></html>
